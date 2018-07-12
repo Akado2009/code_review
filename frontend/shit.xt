@@ -1,0 +1,19 @@
+
+> frontend@0.1.0 start /root/Coding/REACT_ALGORITHMS/react_code_review/frontend
+> node scripts/start.js
+
+{ dotenv: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/.env',
+  appBuild: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/build',
+  appPublic: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/public',
+  appHtml: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/public/index.html',
+  appIndexJs: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/src/index.js',
+  appPackageJson: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/package.json',
+  appSrc: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/src',
+  yarnLockFile: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/yarn.lock',
+  testsSetup: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/src/setupTests.js',
+  appNodeModules: '/root/Coding/REACT_ALGORITHMS/react_code_review/frontend/node_modules',
+  publicUrl: undefined,
+  servedPath: '/',
+  statsRoot: '/root/Coding/REACT_ALGORITHMS/react_code_review' }
+Starting the development server...
+
