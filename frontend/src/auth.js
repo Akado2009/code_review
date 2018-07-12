@@ -4,8 +4,8 @@ import { Provider } from "react-redux"
 import store from "./store/index"
 import AuthForm from './components/Auth/AuthForm'
 
-import lightGreen from '@material-ui/core/colors/lightGreen'
-import orange from '@material-ui/core/colors/orange'
+import blueGrey from '@material-ui/core/colors/blueGrey'
+import pink from '@material-ui/core/colors/pink'
 
 import { MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles'
 
@@ -14,15 +14,15 @@ import Bootstrap from 'bootstrap/dist/css/bootstrap.css'
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: lightGreen[400],
-      main: lightGreen[700],
-      dark: lightGreen[900],
+      light: pink[400],
+      main: pink[200],
+      dark: pink[900],
       contrastText: '#fff',
     },
     secondary: {
-      light: orange[400],
-      main: orange[700],
-      dark: orange[900],
+      light: blueGrey[400],
+      main: blueGrey[700],
+      dark: blueGrey[900],
       contrastText: '#000',
     },
   }
@@ -31,7 +31,7 @@ const theme = createMuiTheme({
     fontSize: 14,
     htmlFontSize: 10,
   }
-});
+})
 
 render(
   <MuiThemeProvider theme={theme}>
