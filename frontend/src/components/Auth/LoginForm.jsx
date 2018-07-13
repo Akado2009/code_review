@@ -13,7 +13,7 @@ import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
 import * as utils from '../../utils.js'
 
-import { changeLoginInfo } from '../../actions/index'
+import { changeLoginInfo, changeAuth } from '../../actions/index'
 
 import $ from 'jquery'
 
@@ -26,7 +26,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        changeLoginInfo: (field, value) => dispatch(changeLoginInfo(field, value))
+        changeLoginInfo: (field, value) => dispatch(changeLoginInfo(field, value)),
+        changeAuth: (mode) => dispatch(changeAuth(mode))
     }
 }
 
@@ -34,7 +35,8 @@ const styles = theme => ({
     root: {
       width: '50%',
       marginTop: 100,
-      padding: 50
+      padding: 50,
+      boxShadow: '0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)'
     },
     textField: {
         marginLeft: theme.spacing.unit,
@@ -67,6 +69,10 @@ const LoginForm = (props) => {
                 props.changeLoginInfo('loginError', true)
             }
         })
+    }
+
+    const switchToRegister = () => {
+        props.changeAuth('register')
     }
 
     return (
@@ -107,6 +113,7 @@ const LoginForm = (props) => {
                                 }
                             })}
                             <center>
+                                <Button onClick={switchToRegister} color="primary">Register</Button>
                                 <Button onClick={loginUser} color="primary" variant="contained">Login</Button>
                             </center>
                         </Card>
