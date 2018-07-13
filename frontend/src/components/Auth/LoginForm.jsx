@@ -11,12 +11,16 @@ import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
+import * as utils from '../../utils.js'
 
 import { changeLoginInfo } from '../../actions/index'
 
+import $ from 'jquery'
+
 const mapStateToProps = state => {
     return {
-        loginInfo: state.loginInfo
+        loginInfo: state.loginInfo,
+        loginError: state.loginError
     }
 }
 
@@ -43,14 +47,26 @@ const styles = theme => ({
 })
 
 const LoginForm = (props) => {
+
     const { classes } = props
 
     const changeValue = value => event => {
-        props.changeLoginInfo(value, event.target.value)
+        props.changeLoginInfo(value.toLowerCase(), event.target.value)
     }
 
     const loginUser = () => {
-        console.log(props.loginInfo)
+        let data = {
+            username: props.loginInfo.username,
+            password: props.loginInfo.password,
+            csrfmiddlewaretoken: utils.getCookie('csrftoken')
+        }
+        $.post('/users/login/', data, (response) => {
+            if (response.response == 'success') {
+                window.location = '/'
+            } else {
+                props.changeLoginInfo('loginError', true)
+            }
+        })
     }
 
     return (
@@ -60,22 +76,35 @@ const LoginForm = (props) => {
                     <Grid container justify="center" spacing={16}>
                         <Card className={classes.root} elevation={1}>
                             {props.loginInfo.fields.map((fieldName, i) => {
-                                let isPassword = fieldName.includes('password')
-                                return (
-                                    <FormControl key={i} className={classNames(classes.margin, classes.textField)}>
+                                let isPassword = fieldName.includes('Password')
+                                if (isPassword) {
+                                    return (
+                                        <FormControl key={i} className={classNames(classes.margin, classes.textField)} error={props.loginError}>
                                         <InputLabel htmlFor="adornment-password">{fieldName}</InputLabel>
                                         <Input
-                                            type={isPassword ? 'password' : 'text'}
+                                            type={'password'}
                                             value={props.loginInfo[fieldName]}
                                             onChange={changeValue(fieldName)}
                                         />
-                                        {props.loginInfo.loginError && isPassword &&
+                                        {props.loginError &&
                                             <FormHelperText id="name-error-text">
                                                 {props.loginInfo.logingErrorMessage}
                                             </FormHelperText>
                                         }
                                     </FormControl>
-                                )
+                                    )
+                                } else {
+                                    return (
+                                        <FormControl key={i} className={classNames(classes.margin, classes.textField)}>
+                                            <InputLabel htmlFor="adornment-password">{fieldName}</InputLabel>
+                                            <Input
+                                                type={'text'}
+                                                value={props.loginInfo[fieldName]}
+                                                onChange={changeValue(fieldName)}
+                                            />
+                                        </FormControl>
+                                    )
+                                }
                             })}
                             <center>
                                 <Button onClick={loginUser} color="primary" variant="contained">Login</Button>

@@ -11,12 +11,16 @@ import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
+import * as utils from '../../utils.js'
 
 import { changeRegisterInfo } from '../../actions/index'
+import $ from 'jquery'
 
 const mapStateToProps = state => {
     return {
-        registerInfo: state.registerInfo
+        registerInfo: state.registerInfo,
+        registerError: state.registerError,
+        registerErrorMessage: state.registerErrorMessage
     }
 }
 
@@ -51,7 +55,31 @@ const RegisterForm = (props) => {
     }
 
     const registerUser = () => {
-        console.log(props.registerInfo)
+        if (props.registerInfo.password != props.registerInfo['password again']) {
+            props.changeRegisterInfo('registerError', true)
+            props.changeRegisterInfo('registerErrorMessage', 'Passwords must be the same. If you still have this error, contact your admin.')
+        } else {
+            let data = {
+                username: props.registerInfo.username,
+                password: props.registerInfo.password,
+                name: props.registerInfo.name,
+                surname: props.registerInfo.surname,
+                csrfmiddlewaretoken: utils.getCookie('csrftoken')
+            }
+            $.post('/users/register/', data, (response) => {
+                if (response.response == 'success') {
+                    props.changeRegisterInfo('registerError', false)
+                    // window.location = '/'
+                } else {
+                    props.changeRegisterInfo('registerError', true)
+                    if (response.data === 'exists') {
+                        props.changeRegisterInfo('registerErrorMessage', response.text)
+                    } else {
+                        props.changeRegisterInfo('registerErrorMessage', response.text)
+                    }
+                }
+            })
+        }
     }
 
     return (
@@ -61,22 +89,35 @@ const RegisterForm = (props) => {
                     <Grid container justify="center" spacing={16}>
                         <Card className={classes.root} elevation={1}>
                             {props.registerInfo.fields.map((fieldName, i) => {
-                                let isPassword = fieldName.includes('password')
-                                return (
-                                    <FormControl key={i} className={classNames(classes.margin, classes.textField)}>
+                                let isPassword = fieldName.includes('Password')
+                                if (isPassword) {
+                                    return (
+                                        <FormControl key={i} className={classNames(classes.margin, classes.textField)} error={props.registerError}>
                                         <InputLabel htmlFor="adornment-password">{fieldName}</InputLabel>
                                         <Input
-                                            type={isPassword ? 'password' : 'text'}
+                                            type={'password'}
                                             value={props.registerInfo[fieldName]}
                                             onChange={changeValue(fieldName)}
                                         />
-                                        {props.registerInfo.registerError && isPassword &&
+                                        {props.registerError &&
                                             <FormHelperText id="name-error-text">
-                                                {props.registerInfo.registerErrorMessage}
+                                                {props.registerErrorMessage}
                                             </FormHelperText>
                                         }
                                     </FormControl>
-                                )
+                                    )
+                                } else {
+                                    return (
+                                        <FormControl key={i} className={classNames(classes.margin, classes.textField)}>
+                                            <InputLabel htmlFor="adornment-password">{fieldName}</InputLabel>
+                                            <Input
+                                                type={'text'}
+                                                value={props.registerInfo[fieldName]}
+                                                onChange={changeValue(fieldName)}
+                                            />
+                                        </FormControl>
+                                    )
+                                }
                             })}
                             <center>
                                 <Button onClick={registerUser} color="primary" variant="contained">Register</Button>

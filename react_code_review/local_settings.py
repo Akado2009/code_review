@@ -16,10 +16,14 @@ DEBUG = True
 ALLOWED_HOSTS = [ '*' ]
 
 PROJECT_APPS = [
+    'users'
 ]
 
 THIRD_PARTY_APPS = [
     'webpack_loader',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 ]
 
 
@@ -43,19 +47,23 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
+
 ROOT_URLCONF = 'react_code_review.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates"), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.auth.context_processors.auth'
             ],
         },
     },
@@ -124,10 +132,15 @@ WEBPACK_LOADER = {
         }
 }
 
+print(os.path.join(BASE_DIR, 'env/lib/python3.6/site-packages/django/contrib/admin/templates'))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates"), ],
+        'DIRS': [
+            os.path.join(BASE_DIR, "templates"),
+            os.path.join(BASE_DIR, 'env/lib/site-packages/django/contrib/admin/templates')
+        ],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -137,3 +150,5 @@ TEMPLATES = [
         },
     },
 ]
+
+SITE_ID = 1
