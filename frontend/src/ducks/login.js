@@ -56,10 +56,10 @@ export default function reducer(state = new ReducerRecord(), action) {
     }
 }
 
-export function signIn(email, password, token) {
+export function signIn(username, password, token) {
     return {
         type: SIGN_IN_REQUEST,
-        payload: {email, password, token}
+        payload: {username, password, token}
     }
 }
 
@@ -90,7 +90,7 @@ export const signInSaga = function * () {
         try {
             const result = yield call(
                 signInDjango,
-                action.payload.email, action.payload.password, action.payload.token
+                action.payload.username, action.payload.password, action.payload.token
             )
             if (result.response === 'error') {
                 yield put({

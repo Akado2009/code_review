@@ -10,45 +10,40 @@ axios.defaults.xsrfCookieName = "csrftoken"
 
 
 export const ReducerRecord = Record({
-    loginError: false,
+    registerError: false,
     username: undefined,
     password: undefined,
-    logingErrorMessage: 'Incorrect password. Contact your admin if you`ve forgottent your password',
-    fields: ['Username', 'Password'],
-    loading: false,
-    authMode: 'login'
+    'password again': undefined,
+    name: undefined,
+    surname: undefined,
+    registerErrorMessage: null,
+    fields: ['Username', 'Password', 'Password again', 'Name', 'Surname'],
+    loading: false
 })
 
-export const moduleName = 'login'
-export const SIGN_IN_REQUEST = `${moduleName}/SIGN_IN_REQUEST`
-export const SIGN_IN_SUCCESS = `${moduleName}/SIGN_IN_SUCCESS`
-export const SIGN_IN_ERROR = `${moduleName}/SIGN_IN_ERROR`
-export const SIGN_OUT_REQUEST = `${moduleName}/SIGN_IN_REQUEST`
-export const SIGN_OUT_SUCCESS = `${moduleName}/SIGN_OUT_SUCCESS`
-export const CHANGE_LOGIN_INFO = `${moduleName}/CHANGE_LOGIN_INFO`
-export const CHANGE_MODE_INFO = `${moduleName}/CHANGE_MODE_INFO`
+export const moduleName = 'register'
+
+export const SIGN_UP_REQUEST = `${moduleName}/SIGN_UP_REQUEST`
+export const SIGN_UP_SUCCESS = `${moduleName}/SIGN_UP_SUCCESS`
+export const SIGN_UP_ERROR =`${moduleName}/SIGN_UP_ERROR`
+export const CHANGE_REGISTER_INFO = `${moduleName}/CHANGE_REGISTER_INFO`
 
 export default function reducer(state = new ReducerRecord(), action) {
     const {type, payload, error} = action
 
     switch (type) {
-        case SIGN_IN_REQUEST:
-        case SIGN_OUT_REQUEST:
+        case SIGN_UP_REQUEST:
             return state.set('loading', true)
-        case SIGN_IN_SUCCESS:
+        case SIGN_UP_SUCCESS:
             return state
                 .set('loading', false)
-                .set('loginError', false)
-        case SIGN_IN_ERROR:
+                .set('registerError', false)
+        case SIGN_UP_ERROR:
             return state
                 .set('loading', false)
-                .set('loginError', true)
-        case SIGN_OUT_SUCCESS:
-            return new ReducerRecord()
-        case CHANGE_MODE_INFO:
-            return state
-                .set('authMode', payload.mode)
-        case CHANGE_LOGIN_INFO:
+                .set('registerError', true)
+                .set('registerErrorMessage', payload.errorMsg)
+        case CHANGE_REGISTER_INFO:
             return state
                 .set(payload.field, payload.value)
         default:
@@ -56,72 +51,63 @@ export default function reducer(state = new ReducerRecord(), action) {
     }
 }
 
-export function signIn(email, password, token) {
+export function signUp(username, password, name, surname, token) {
     return {
-        type: SIGN_IN_REQUEST,
-        payload: {email, password, token}
+        type: SIGN_UP_REQUEST,
+        payload: {username, password, name, surname, token}
     }
 }
 
-export function signOut() {
+export function changeRegisterInfo(field, value){
     return {
-        type: SIGN_OUT_REQUEST
-    }
-}
-
-export function changeLoginInfo(field, value) {
-    return {
-        type: CHANGE_LOGIN_INFO,
+        type: CHANGE_REGISTER_INFO,
         payload: {field, value}
     }
 }
 
-export function changeMode(mode) {
-    return {
-        type: CHANGE_MODE_INFO,
-        payload: {mode}
-    }
-}
-
-export const signInSaga = function * () {
+export const signUpSaga = function * () {
 
     while (true) {
-        const action = yield take(SIGN_IN_REQUEST)
+        const action = yield take(SIGN_UP_REQUEST)
         try {
             const result = yield call(
-                signInDjango,
-                action.payload.email, action.payload.password, action.payload.token
+                signUpDjango,
+                action.payload.username, action.payload.password, action.payload.name,
+                action.payload.surname, action.payload.token
             )
             if (result.response === 'error') {
                 yield put({
-                    type: SIGN_IN_ERROR
+                    type: SIGN_UP_ERROR,
+                    payload: {
+                        errorMsg: result.text
+                    }
                 })
             } else {
                 yield put({
-                    type: SIGN_IN_SUCCESS
+                    type: SIGN_UP_SUCCESS
                 })
                 window.location = '/'
                 // yield history.push('/')
             }
         } catch (error) {
             yield put({
-                type: SIGN_IN_ERROR,
+                type: SIGN_UP_ERROR,
                 error
             })
         }
     }
 }
 
-const signInDjango = function * (username, password, token) {
+const signUpDjango = function * (username, password, name, surname, token) {
 
     let data = {
-        username: username, password: password, csrfmiddlewaretoken: token
+        username: username, password: password, name, surname, csrfmiddlewaretoken: token
     }
 
     try {
         const result = yield call(
             axios.post,
-            '/users/login/',
+            '/users/register/',
             data
         )
         return result.data
@@ -130,21 +116,9 @@ const signInDjango = function * (username, password, token) {
     }
 }
 
-export const signOutSaga = function * () {
-    try {
-        yield call()
-        yield put({
-            type: SIGN_IN_SUCCESS,
-            payload: {}
-        })
-    } catch (_) {
-
-    }
-}
-
 export const saga = function * () {
     yield all([
-        signInSaga(),
+        signUpSaga(),
         // changeInfoSaga(),
         // changeModeSaga(),
         // takeEvery(SIGN_OUT_REQUEST, signOutSaga)

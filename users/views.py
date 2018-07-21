@@ -18,10 +18,11 @@ import json
 def register(request):
     try:
         if request.method == 'POST':
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            name = request.POST.get('name')
-            surname = request.POST.get('surname')
+            data = json.loads(request.body.decode('utf-8'))
+            username = data.get('username')
+            password = data.get('password')
+            name = data.get('name')
+            surname = data.get('surname')
             print(username, password, name, surname)
 
             if get_user_model().objects.filter(username=username).exists():

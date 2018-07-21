@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import Header from './Header'
 import LoginForm from './LoginForm'
-// import RegisterForm from './RegisterForm'
+import RegisterForm from './RegisterForm'
 
 import { moduleName } from '../../ducks/login'
 
@@ -22,8 +22,7 @@ const ConnectedAuthForm = (props) => {
             {props.mode === 'login' ?
                 <LoginForm />
                 :
-                <div> shit</div>
-                // <RegisterForm/>
+                <RegisterForm/>
             }
         </div>
     )

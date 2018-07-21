@@ -11,23 +11,19 @@ import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
+import CircularProgress from '@material-ui/core/CircularProgress'
+
 import * as utils from '../../utils.js'
 
-import { changeRegisterInfo, changeAuth } from '../../actions/index'
+import { moduleName as registerModule, signUp, changeRegisterInfo } from '../../ducks/register'
+import { changeMode} from '../../ducks/login'
 import $ from 'jquery'
 
 const mapStateToProps = state => {
     return {
-        registerInfo: state.registerInfo,
-        registerError: state.registerError,
-        registerErrorMessage: state.registerErrorMessage
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        changeRegisterInfo: (field, value) => dispatch(changeRegisterInfo(field, value)),
-        changeAuth: (mode) => dispatch(changeAuth(mode))
+        registerInfo: state[registerModule],
+        registerError: state[registerModule].registerError,
+        registerErrorMessage: state[registerModule].registerErrorMessage
     }
 }
 
@@ -45,6 +41,17 @@ const styles = theme => ({
     },
     margin: {
         marginBottom: 40
+    },
+    buttonProgress: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
+    wrapper: {
+        margin: theme.spacing.unit,
+        position: 'relative',
     }
 })
 
@@ -61,31 +68,15 @@ const RegisterForm = (props) => {
             props.changeRegisterInfo('registerError', true)
             props.changeRegisterInfo('registerErrorMessage', 'Passwords must be the same. If you still have this error, contact your admin.')
         } else {
-            let data = {
-                username: props.registerInfo.username,
-                password: props.registerInfo.password,
-                name: props.registerInfo.name,
-                surname: props.registerInfo.surname,
-                csrfmiddlewaretoken: utils.getCookie('csrftoken')
-            }
-            $.post('/users/register/', data, (response) => {
-                if (response.response === 'success') {
-                    props.changeRegisterInfo('registerError', false)
-                    // window.location = '/'
-                } else {
-                    props.changeRegisterInfo('registerError', true)
-                    if (response.data === 'exists') {
-                        props.changeRegisterInfo('registerErrorMessage', response.text)
-                    } else {
-                        props.changeRegisterInfo('registerErrorMessage', response.text)
-                    }
-                }
-            })
+
+            props.signUp(props.registerInfo.username, props.registerInfo.password,
+                         props.registerInfo.name,  props.registerInfo.surname,
+                         utils.getCookie('csrftoken'))
         }
     }
 
     const switchToLogin = () => {
-        props.changeAuth('login')
+        props.changeMode('login')
     }
 
     return (
@@ -127,7 +118,17 @@ const RegisterForm = (props) => {
                             })}
                             <center>
                                 <Button onClick={switchToLogin} color="primary">Login</Button>
-                                <Button onClick={registerUser} color="primary" variant="contained">Register</Button>
+                                <div className={classes.wrapper}>
+                                    <Button
+                                        onClick={registerUser}
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={props.loading}
+                                    >
+                                        Register
+                                    </Button>
+                                    {props.loading && <CircularProgress size={40} className={classes.buttonProgress} />}
+                                </div>
                             </center>
                         </Card>
                     </Grid>
@@ -143,5 +144,5 @@ RegisterForm.propTypes = {
 }
 
 export default withStyles(styles)(
-    connect(mapStateToProps, mapDispatchToProps)(RegisterForm)
+    connect(mapStateToProps, {changeRegisterInfo, changeMode, signUp})(RegisterForm)
 )

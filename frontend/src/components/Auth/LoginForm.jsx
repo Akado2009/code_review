@@ -11,6 +11,8 @@ import InputLabel from '@material-ui/core/InputLabel'
 import FormHelperText from '@material-ui/core/FormHelperText'
 import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
+import CircularProgress from '@material-ui/core/CircularProgress'
+
 import * as utils from '../../utils.js'
 
 import { moduleName, signIn, changeLoginInfo, changeMode } from '../../ducks/login'
@@ -19,14 +21,8 @@ import $ from 'jquery'
 const mapStateToProps = state => {
     return {
         loginInfo: state[moduleName],
-        loginError: state[moduleName].loginError
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        // changeLoginInfo: (field, value) => dispatch(changeLoginInfo(field, value)),
-        // changeAuth: (mode) => dispatch(changeAuth(mode))
+        loginError: state[moduleName].loginError,
+        loading: state[moduleName].loading
     }
 }
 
@@ -44,6 +40,17 @@ const styles = theme => ({
     },
     margin: {
         marginBottom: 40
+    },
+    buttonProgress: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        marginTop: -12,
+        marginLeft: -12,
+    },
+    wrapper: {
+        margin: theme.spacing.unit,
+        position: 'relative',
     }
 })
 
@@ -102,7 +109,17 @@ const LoginForm = (props) => {
                             })}
                             <center>
                                 <Button onClick={switchToRegister} color="primary">Register</Button>
-                                <Button onClick={loginUser} color="primary" variant="contained">Login</Button>
+                                <div className={classes.wrapper}>
+                                    <Button
+                                        onClick={loginUser}
+                                        color="primary"
+                                        variant="contained"
+                                        disabled={props.loading}
+                                    >
+                                        Login
+                                    </Button>
+                                    {props.loading && <CircularProgress size={40} className={classes.buttonProgress} />}
+                                </div>
                             </center>
                         </Card>
                     </Grid>
