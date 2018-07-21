@@ -17,7 +17,6 @@ import * as utils from '../../utils.js'
 
 import { moduleName as registerModule, signUp, changeRegisterInfo } from '../../ducks/register'
 import { changeMode} from '../../ducks/login'
-import $ from 'jquery'
 
 const mapStateToProps = state => {
     return {

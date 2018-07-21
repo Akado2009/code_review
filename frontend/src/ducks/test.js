@@ -1,6 +1,5 @@
 import { Record } from 'immutable'
 import { all, call, put, take } from 'redux-saga/effects'
-import $ from 'jquery'
 
 import history from '../history'
 
@@ -12,20 +11,31 @@ export const ReducerRecord = Record({
     available: [],
     disabled: [],
     loading: false,
-    questions: []
+    questions: [],
+    currentQuestion: 0,
+    language: 'python',
+    languages: ['python', 'javascript', 'c', 'cpp', 'r', 'plaintext'],
+    answers: []
 })
 
 export const moduleName = 'test'
 export const FETCH_TESTS = `${moduleName}/FETCH_TESTS`
 export const FETCH_TESTS_SUCCESS = `${moduleName}/FETCH_TESTS_SUCCESS`
 export const FETCH_TESTS_ERROR = `${moduleName}/FETCH_TESTS_ERROR`
+
 export const FETCH_TEST_INFO = `${moduleName}/FETCH_TEST_INFO`
 export const FETCH_TEST_INFO_SUCCESS = `${moduleName}/FETCH_TEST_INFO_SUCCESS`
 export const FETCH_TEST_INFO_ERROR = `${moduleName}/FETCH_TEST_INFO_ERROR`
 
+export const NEXT_QUESTION = `${moduleName}/NEXT_QUESTION`
+export const PREVIOUS_QUESTION = `${moduleName}/PREVIOUS_QUESTION`
+
+export const CHANGE_LANGUAGE = `${moduleName}/CHANGE_LANGUAGE`
+export const CHANGE_CODE = `${moduleName}/CHANGE_CODE`
+
 
 export default function reducer(state = new ReducerRecord(), action) {
-    const {type, payload, error} = action
+    const {type, payload} = action
 
     switch (type) {
         case FETCH_TESTS:
@@ -46,11 +56,62 @@ export default function reducer(state = new ReducerRecord(), action) {
             return state
                 .set('loading', false)
                 .set('questions', payload.questions)
+                .set('answers', payload.answers)
+        case NEXT_QUESTION:
+            return state
+                .set('currentQuestion', payload.nextIndex >= state.questions.length ? state.questions.length : payload.nextIndex)
+        case PREVIOUS_QUESTION:
+            return state
+                .set('currentQuestion', payload.previousIndex < 0 ? 0 : payload.previousIndex)
+        case CHANGE_LANGUAGE:
+            return state
+                .set('language', payload.language)
+        case CHANGE_CODE:
+            let answers = state.answers
+            answers[state.currentQuestion] = payload.code
+            return state
+                .set('answers', answers)
         default:
             return state
     }
 }
 
+
+export function changeCode(code) {
+    return {
+        type: CHANGE_CODE,
+        payload: {
+            code: code
+        }
+    }
+}
+
+export function changeLanguage(language) {
+    return {
+        type: CHANGE_LANGUAGE,
+        payload: {
+            language: language
+        }
+    }
+}
+
+export function nextQuestion(index) {
+    return {
+        type: NEXT_QUESTION,
+        payload: {
+            nextIndex: index + 1
+        }
+    }
+}
+
+export function previousQuestion(index) {
+    return {
+        type: PREVIOUS_QUESTION,
+        payload: {
+            previousIndex: index - 1
+        }
+    }
+}
 export function fetchTests() {
     return {
         type: FETCH_TESTS
@@ -124,7 +185,8 @@ export const fetchTestInfoSaga = function * (id) {
                 yield put({
                     type: FETCH_TEST_INFO_SUCCESS,
                     payload: {
-                        questions: result.data
+                        questions: result.data,
+                        answers: Array(result.data.length).join(".").split(".")
                     }
                 })
             }

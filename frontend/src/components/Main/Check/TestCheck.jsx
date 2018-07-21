@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles'
 import PropTypes from 'prop-types'
 
 
-import { moduleName, fetchTestInfo } from '../../ducks/test'
+import { moduleName, fetchTestInfo } from '../../../ducks/test'
 import { connect } from 'react-redux'
 
 import { CircularProgress } from '@material-ui/core'
@@ -20,7 +20,7 @@ const mapStateToProps = state => {
     questions: state[moduleName].questions
   }
 }
-class Test extends React.Component {
+class TestCheck extends React.Component {
 
   componentWillMount = () => {
     this.props.fetchTestInfo(this.props.match.params.number)
@@ -28,7 +28,6 @@ class Test extends React.Component {
 
   render () {
     const { classes } = this.props
-    console.log(this.props.questions)
     return (
       <div>
         {this.props.loading &&
@@ -36,16 +35,17 @@ class Test extends React.Component {
             <CircularProgress size={40} color="primary" />
           </center>
         }
+        ПРОВЕРИТЬ
         <Link to='/'>BACK</Link>
       </div>
     )
   }
 }
 
-Test.propTypes = {
+TestCheck.propTypes = {
   classes: PropTypes.object.isRequired
 }
 
 export default withStyles(styles)(
-  connect(mapStateToProps, { fetchTestInfo })(Test)
+  connect(mapStateToProps, { fetchTestInfo })(TestCheck)
 )

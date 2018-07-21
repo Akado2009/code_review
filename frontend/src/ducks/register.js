@@ -1,6 +1,5 @@
 import {Record} from 'immutable'
-import {all, call, put, takeEvery, take} from 'redux-saga/effects'
-import $ from 'jquery'
+import {all, call, put, take} from 'redux-saga/effects'
 
 import history from '../history'
 
@@ -29,7 +28,7 @@ export const SIGN_UP_ERROR =`${moduleName}/SIGN_UP_ERROR`
 export const CHANGE_REGISTER_INFO = `${moduleName}/CHANGE_REGISTER_INFO`
 
 export default function reducer(state = new ReducerRecord(), action) {
-    const {type, payload, error} = action
+    const {type, payload} = action
 
     switch (type) {
         case SIGN_UP_REQUEST:

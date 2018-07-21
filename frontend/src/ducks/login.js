@@ -1,6 +1,5 @@
 import { Record } from 'immutable'
 import { all, call, put, take } from 'redux-saga/effects'
-import $ from 'jquery'
 
 import history from '../history'
 
@@ -30,7 +29,7 @@ export const CHANGE_LOGIN_INFO = `${moduleName}/CHANGE_LOGIN_INFO`
 export const CHANGE_MODE_INFO = `${moduleName}/CHANGE_MODE_INFO`
 
 export default function reducer(state = new ReducerRecord(), action) {
-    const {type, payload, error} = action
+    const {type, payload} = action
 
     switch (type) {
         case SIGN_IN_REQUEST:

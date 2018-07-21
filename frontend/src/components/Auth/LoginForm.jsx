@@ -16,7 +16,6 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import * as utils from '../../utils.js'
 
 import { moduleName, signIn, changeLoginInfo, changeMode } from '../../ducks/login'
-import $ from 'jquery'
 
 const mapStateToProps = state => {
     return {

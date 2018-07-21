@@ -62,13 +62,16 @@ class TestsForm extends React.Component {
                         <Typography variant="subheading">
                           {test.name}
                         </Typography>
+                        <Typography variant="body2">
+                          {test.description}
+                        </Typography>
                         <Typography variant="caption">
                           {test.author}
                         </Typography>
                         <Typography variant="caption">
                           {test.created_at}
                         </Typography>
-                        <Link to={`/test/${test.id}`}> CHECK </Link>
+                        <Link to={`/test/solve/${test.id}`}> SOLVE </Link>
                       </Paper>
                     </Grid>
                 )
@@ -93,7 +96,7 @@ class TestsForm extends React.Component {
                       <Typography variant="caption">
                         {test.created_at}
                       </Typography>
-                      <Link to={`/test/${test.id}`}> CHECK </Link>
+                      <Link to={`/test/check/${test.id}`}> CHECK </Link>
                     </Paper>
                   </Grid>
                 )

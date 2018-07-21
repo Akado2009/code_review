@@ -3,7 +3,8 @@ import { Switch, Route } from 'react-router-dom'
 
 import Header from './Header'
 import TestsForms from './TestsDashboard'
-import Test from './Test'
+import TestSolve from './Solve/TestSolve'
+import TestCheck from './Check/TestCheck'
 import Error from './Error'
 
 
@@ -13,7 +14,8 @@ const MainForm = () => {
             <Header />
             <Switch>
                 <Route exact path='/' component={TestsForms}/>
-                <Route path='/test/:number' component={Test}/>
+                <Route path='/test/solve/:number' component={TestSolve}/>
+                <Route path='/test/check/:number' component={TestCheck}/>
                 <Route component={Error} />
             </Switch>
         </div>
