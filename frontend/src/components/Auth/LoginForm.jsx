@@ -13,21 +13,20 @@ import FormControl from '@material-ui/core/FormControl'
 import Button from '@material-ui/core/Button'
 import * as utils from '../../utils.js'
 
-import { changeLoginInfo, changeAuth } from '../../actions/index'
-
+import { moduleName, signIn, changeLoginInfo, changeMode } from '../../ducks/login'
 import $ from 'jquery'
 
 const mapStateToProps = state => {
     return {
-        loginInfo: state.loginInfo,
-        loginError: state.loginError
+        loginInfo: state[moduleName],
+        loginError: state[moduleName].loginError
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        changeLoginInfo: (field, value) => dispatch(changeLoginInfo(field, value)),
-        changeAuth: (mode) => dispatch(changeAuth(mode))
+        // changeLoginInfo: (field, value) => dispatch(changeLoginInfo(field, value)),
+        // changeAuth: (mode) => dispatch(changeAuth(mode))
     }
 }
 
@@ -57,22 +56,11 @@ const LoginForm = (props) => {
     }
 
     const loginUser = () => {
-        let data = {
-            username: props.loginInfo.username,
-            password: props.loginInfo.password,
-            csrfmiddlewaretoken: utils.getCookie('csrftoken')
-        }
-        $.post('/users/login/', data, (response) => {
-            if (response.response == 'success') {
-                window.location = '/'
-            } else {
-                props.changeLoginInfo('loginError', true)
-            }
-        })
+        props.signIn(props.loginInfo.username, props.loginInfo.password, utils.getCookie('csrftoken'))
     }
 
     const switchToRegister = () => {
-        props.changeAuth('register')
+        props.changeMode('register')
     }
 
     return (
@@ -130,5 +118,5 @@ LoginForm.propTypes = {
 }
 
 export default withStyles(styles)(
-    connect(mapStateToProps, mapDispatchToProps)(LoginForm)
+    connect(mapStateToProps, {signIn, changeLoginInfo, changeMode})(LoginForm)
 )

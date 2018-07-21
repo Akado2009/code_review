@@ -4,26 +4,26 @@ import { connect } from 'react-redux'
 
 import Header from './Header'
 import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
+// import RegisterForm from './RegisterForm'
 
-
+import { moduleName } from '../../ducks/login'
 
 const mapStateToProps = state => {
     return {
-        mode: state.authMode
+        mode: state[moduleName].authMode
     }
 }
 
 
 const ConnectedAuthForm = (props) => {
-
     return (
         <div className="container">
             <Header />
             {props.mode === 'login' ?
                 <LoginForm />
                 :
-                <RegisterForm/>
+                <div> shit</div>
+                // <RegisterForm/>
             }
         </div>
     )

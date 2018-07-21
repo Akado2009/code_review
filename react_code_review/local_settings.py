@@ -152,3 +152,7 @@ TEMPLATES = [
 ]
 
 SITE_ID = 1
+
+LOGIN_URL = '/auth/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/auth/'

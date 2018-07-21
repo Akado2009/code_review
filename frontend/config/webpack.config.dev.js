@@ -25,19 +25,19 @@ module.exports = {
   devtool: 'cheap-module-source-map',
 
   entry: {
-    index: [
-      require.resolve('webpack-dev-server/client') + '?http://localhost:3000',
-      require.resolve('webpack/hot/dev-server'),
-      require.resolve('./polyfills'),
-      require.resolve('react-error-overlay'),
-      paths.appSrc + "/index.js",
-    ],
     auth:[
       require.resolve('webpack-dev-server/client') + '?http://localhost:3000',
       require.resolve('webpack/hot/dev-server'),
       require.resolve('./polyfills'),
       require.resolve('react-error-overlay'),
       paths.appSrc + "/auth.js",
+    ],
+    main:[
+      require.resolve('webpack-dev-server/client') + '?http://localhost:3000',
+      require.resolve('webpack/hot/dev-server'),
+      require.resolve('./polyfills'),
+      require.resolve('react-error-overlay'),
+      paths.appSrc + "/main.js",
     ]
   },
   output: {

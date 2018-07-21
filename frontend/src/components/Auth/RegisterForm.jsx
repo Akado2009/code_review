@@ -57,7 +57,7 @@ const RegisterForm = (props) => {
     }
 
     const registerUser = () => {
-        if (props.registerInfo.password != props.registerInfo['password again']) {
+        if (props.registerInfo.password !== props.registerInfo['password again']) {
             props.changeRegisterInfo('registerError', true)
             props.changeRegisterInfo('registerErrorMessage', 'Passwords must be the same. If you still have this error, contact your admin.')
         } else {
@@ -69,7 +69,7 @@ const RegisterForm = (props) => {
                 csrfmiddlewaretoken: utils.getCookie('csrftoken')
             }
             $.post('/users/register/', data, (response) => {
-                if (response.response == 'success') {
+                if (response.response === 'success') {
                     props.changeRegisterInfo('registerError', false)
                     // window.location = '/'
                 } else {

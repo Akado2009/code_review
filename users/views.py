@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout, get_user_model
 from django.http import JsonResponse
 
+import json
+
 # from django.contrib.auth import authenticate, login as django_login, logout as django_logout, get_user_model
 # from django.http import JsonResponse
 # from django.views.generic import TemplateView
@@ -36,10 +38,10 @@ def register(request):
 
 def login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        data = json.loads(request.body.decode('utf-8'))
+        username = data.get('username')
+        password = data.get('password')
         user = authenticate(username=username, password=password)
-
         if user:
             django_login(request, user)
             return JsonResponse({'response': 'success'})

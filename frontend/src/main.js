@@ -4,7 +4,8 @@ import { Provider } from "react-redux"
 import store from "./redux"
 import MainForm from './components/Main/App'
 
-import {BrowserRouter} from 'react-router-dom'
+import {Router} from 'react-router-dom'
+import history from './history'
 
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import pink from '@material-ui/core/colors/pink'
@@ -39,9 +40,9 @@ const theme = createMuiTheme({
 render(
     <MuiThemeProvider theme={theme}>
       <Provider store={store}>
-        <BrowserRouter>
+        <Router history={history}>
           <MainForm />
-        </BrowserRouter>
+        </Router>
       </Provider>
     </MuiThemeProvider>
   , document.getElementById("root")

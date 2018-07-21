@@ -12,7 +12,7 @@ export function getCookie(name) {
 
 export function checkObject(object) {
     if (object) {
-        if (Object.keys(object).length != 0) {
+        if (Object.keys(object).length !== 0) {
             return true;
         }
         return false;
