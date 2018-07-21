@@ -1,5 +1,5 @@
-import {Record} from 'immutable'
-import {all, call, put, takeEvery, take} from 'redux-saga/effects'
+import { Record } from 'immutable'
+import { all, call, put, take } from 'redux-saga/effects'
 import $ from 'jquery'
 
 import history from '../history'
@@ -23,8 +23,9 @@ export const moduleName = 'login'
 export const SIGN_IN_REQUEST = `${moduleName}/SIGN_IN_REQUEST`
 export const SIGN_IN_SUCCESS = `${moduleName}/SIGN_IN_SUCCESS`
 export const SIGN_IN_ERROR = `${moduleName}/SIGN_IN_ERROR`
-export const SIGN_OUT_REQUEST = `${moduleName}/SIGN_IN_REQUEST`
+export const SIGN_OUT_REQUEST = `${moduleName}/SIGN_OUT_REQUEST`
 export const SIGN_OUT_SUCCESS = `${moduleName}/SIGN_OUT_SUCCESS`
+export const SIGN_OUT_ERROR = `${moduleName}/SIGN_OUT_ERROR`
 export const CHANGE_LOGIN_INFO = `${moduleName}/CHANGE_LOGIN_INFO`
 export const CHANGE_MODE_INFO = `${moduleName}/CHANGE_MODE_INFO`
 
@@ -60,12 +61,6 @@ export function signIn(username, password, token) {
     return {
         type: SIGN_IN_REQUEST,
         payload: {username, password, token}
-    }
-}
-
-export function signOut() {
-    return {
-        type: SIGN_OUT_REQUEST
     }
 }
 
@@ -117,7 +112,6 @@ const signInDjango = function * (username, password, token) {
     let data = {
         username: username, password: password, csrfmiddlewaretoken: token
     }
-
     try {
         const result = yield call(
             axios.post,
@@ -126,27 +120,62 @@ const signInDjango = function * (username, password, token) {
         )
         return result.data
     } catch (err) {
-        return Promise.reject(err.message);
+        return Promise.reject(err.message)
+    }
+}
+
+
+export function signOut(token) {
+    return {
+        type: SIGN_OUT_REQUEST,
+        payload: { token }
     }
 }
 
 export const signOutSaga = function * () {
+    const action = yield take(SIGN_OUT_REQUEST)
     try {
-        yield call()
-        yield put({
-            type: SIGN_IN_SUCCESS,
-            payload: {}
-        })
-    } catch (_) {
-
+        const result = yield call(
+            signOutDjango,
+            action.payload.token
+        )
+        if (result.response === 'error') {
+            yield put({
+                type: SIGN_OUT_ERROR
+            })
+        } else {
+            yield put({
+                type: SIGN_OUT_SUCCESS
+            })
+            window.location = '/auth'
+        }
+    } catch (err) {
+        return Promise.reject(err.message);
     }
 }
+
+const signOutDjango = function * (token) {
+    let data = { csrfmiddlewaretoken: token }
+    try {
+        const result = yield call(
+            axios.post,
+            '/users/logout/',
+            data
+        )
+        return result.data
+    } catch (err) {
+        yield put({
+            type: SIGN_OUT_ERROR
+        })
+    }
+}
+
 
 export const saga = function * () {
     yield all([
         signInSaga(),
+        signOutSaga()
         // changeInfoSaga(),
         // changeModeSaga(),
-        // takeEvery(SIGN_OUT_REQUEST, signOutSaga)
     ])
 }

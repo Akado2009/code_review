@@ -16,7 +16,9 @@ DEBUG = True
 ALLOWED_HOSTS = [ '*' ]
 
 PROJECT_APPS = [
-    'users'
+    'users',
+    'api',
+    'tests'
 ]
 
 THIRD_PARTY_APPS = [
@@ -132,7 +134,6 @@ WEBPACK_LOADER = {
         }
 }
 
-print(os.path.join(BASE_DIR, 'env/lib/python3.6/site-packages/django/contrib/admin/templates'))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

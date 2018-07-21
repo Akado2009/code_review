@@ -37,13 +37,12 @@ const theme = createMuiTheme({
   }
 })
 
-render(
-    <MuiThemeProvider theme={theme}>
-      <Provider store={store}>
-        <Router history={history}>
-          <MainForm />
-        </Router>
-      </Provider>
-    </MuiThemeProvider>
-  , document.getElementById("root")
-)
+render((
+  <MuiThemeProvider theme={theme}>
+    <Provider store={store}>
+      <Router history={history}>
+        <MainForm />
+      </Router>
+    </Provider>
+  </MuiThemeProvider>
+), document.getElementById('root'))

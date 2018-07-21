@@ -10,5 +10,8 @@ urlpatterns = [
     url(r'^$', login_required(IndexView.as_view()), name='main'),
     url(r'^auth/', AuthView.as_view(), name='auth'),
     url(r'^users/', include('users.urls', namespace='users')),
-    url(r'^editor/', editorView, name='editor')
+    url(r'^editor/', editorView, name='editor'),
+
+    url(r'^tests/', include('tests.urls', namespace='tests')),
+
 ]

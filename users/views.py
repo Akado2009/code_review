@@ -23,7 +23,6 @@ def register(request):
             password = data.get('password')
             name = data.get('name')
             surname = data.get('surname')
-            print(username, password, name, surname)
 
             if get_user_model().objects.filter(username=username).exists():
                 return JsonResponse({'response': 'error', 'text': 'User already exists.', 'data': 'exists'})
