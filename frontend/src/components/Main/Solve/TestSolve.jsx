@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
 
 import { moduleName, fetchTestInfo, nextQuestion, previousQuestion } from '../../../ducks/test'
 import { connect } from 'react-redux'
@@ -26,14 +25,6 @@ class TestSolve extends React.Component {
     this.props.fetchTestInfo(this.props.match.params.number)
   }
 
-  nextQuestion = () => {
-    this.props.nextQuestion(this.props.currentQuestion)
-  }
-
-  previousQuestion = () => {
-    this.props.previousQuestion(this.props.currentQuestion)
-  }
-
   render () {
     const { currentQuestion, questions } = this.props
     return (
@@ -45,13 +36,12 @@ class TestSolve extends React.Component {
         }
         {
           questions[currentQuestion] &&
-          <center>
-            {/* <Link to='/'>BACK</Link> */}
+          <div>
             <br />
             <Question />
             <br />
             <Editor />
-          </center>
+          </div>
         }
       </div>
     )

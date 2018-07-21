@@ -45,21 +45,22 @@ const Question = (props) => {
         <div>
             <Card className={classes.card}>
                 <CardContent>
-                <Typography gutterBottom variant="headline" component="h2">
-                    {questions[currentQuestion] && questions[currentQuestion].name}
-                </Typography>
-                <Typography component="p">
-                    Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-                    across all continents except Antarctica
-                </Typography>
+                    <Typography gutterBottom variant="headline" component="h2">
+                        {questions[currentQuestion] && questions[currentQuestion].name}
+                    </Typography>
+                    <Typography component="p">
+                        {questions[currentQuestion] && questions[currentQuestion].text}
+                    </Typography>
                 </CardContent>
                 <CardActions>
-                <Button size="small" color="primary" onClick={previousQuestion}>
-                    Previous
-                </Button>
-                <Button size="small" color="primary" onClick={nextQuestion}>
-                    Next
-                </Button>
+                    {currentQuestion > 0 &&
+                    <Button size="small" color="primary" onClick={previousQuestion}>
+                        Previous
+                    </Button> }
+                    {currentQuestion < questions.length - 1 &&
+                    <Button size="small" color="primary" onClick={nextQuestion}>
+                        Next
+                    </Button> }
                 </CardActions>
             </Card>
         </div>

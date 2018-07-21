@@ -15,7 +15,9 @@ export const ReducerRecord = Record({
     currentQuestion: 0,
     language: 'python',
     languages: ['python', 'javascript', 'c', 'cpp', 'r', 'plaintext'],
-    answers: []
+    answers: [],
+    snackOpen: false,
+    snackText: ''
 })
 
 export const moduleName = 'test'
@@ -32,6 +34,17 @@ export const PREVIOUS_QUESTION = `${moduleName}/PREVIOUS_QUESTION`
 
 export const CHANGE_LANGUAGE = `${moduleName}/CHANGE_LANGUAGE`
 export const CHANGE_CODE = `${moduleName}/CHANGE_CODE`
+
+export const SAVE_ANSWER_REQUEST = `${moduleName}/SAVE_ANSWER_REQUEST`
+export const SAVE_ANSWER_SUCCESS = `${moduleName}/SAVE_ANSWER_SUCCESS`
+export const SAVE_ANSWER_ERROR = `${moduleName}/SAVE_ANSWER_ERROR`
+
+export const CLOSE_SNACKBAR = `${moduleName}/CLOSE_SNACKBAR`
+
+export const SAVE_ALL_ANSWERS_REQUEST = `${moduleName}/SAVE_ALL_ANSWERS_REQUEST`
+export const SAVE_ALL_ANSWERS_SUCCESS = `${moduleName}/SAVE_ALL_ANSWERS_SUCCESS`
+export const SAVE_ALL_ANSWERS_ERROR = `${moduleName}/SAVE_ALL_ANSWERS_ERROR`
+
 
 
 export default function reducer(state = new ReducerRecord(), action) {
@@ -68,14 +81,48 @@ export default function reducer(state = new ReducerRecord(), action) {
                 .set('language', payload.language)
         case CHANGE_CODE:
             let answers = state.answers
-            answers[state.currentQuestion] = payload.code
+            answers[state.currentQuestion].content = payload.code
             return state
                 .set('answers', answers)
+        case SAVE_ANSWER_REQUEST:
+            return state
+                .set('loading', true)
+        case SAVE_ANSWER_SUCCESS:
+            return state
+                .set('snackOpen', true)
+                .set('snackText', payload.message)
+                .set('loading', false)
+        case SAVE_ANSWER_ERROR:
+            return state
+                .set('snackOpen', true)
+                .set('snackText', 'Something went wrong...')
+                .set('loading', false)
+        case SAVE_ALL_ANSWERS_REQUEST:
+            return state
+                .set('loading', true)
+        case SAVE_ALL_ANSWERS_SUCCESS:
+            return state
+                .set('snackOpen', true)
+                .set('snackText', payload.message)
+                .set('loading', false)
+        case SAVE_ALL_ANSWERS_ERROR:
+            return state
+                .set('snackOpen', true)
+                .set('snackText', 'Something went wrong...')
+                .set('loading', false)
+        case CLOSE_SNACKBAR:
+            return state
+                .set('snackOpen', false)
         default:
             return state
     }
 }
 
+export function closeSnack() {
+    return {
+        type: CLOSE_SNACKBAR
+    }
+}
 
 export function changeCode(code) {
     return {
@@ -112,6 +159,7 @@ export function previousQuestion(index) {
         }
     }
 }
+
 export function fetchTests() {
     return {
         type: FETCH_TESTS
@@ -185,8 +233,8 @@ export const fetchTestInfoSaga = function * (id) {
                 yield put({
                     type: FETCH_TEST_INFO_SUCCESS,
                     payload: {
-                        questions: result.data,
-                        answers: Array(result.data.length).join(".").split(".")
+                        questions: result.data.questions,
+                        answers: result.data.answers
                     }
                 })
             }
@@ -199,7 +247,7 @@ export const fetchTestInfoSaga = function * (id) {
     }
 }
 
-export const djangoFetchTestInfo = function * (id) {
+const djangoFetchTestInfo = function * (id) {
     try {
         const result = yield call(
             axios.get,
@@ -211,9 +259,119 @@ export const djangoFetchTestInfo = function * (id) {
     }
 }
 
+export function saveAnswer(id, answer) {
+    return {
+        type: SAVE_ANSWER_REQUEST,
+        payload: {
+            id, answer
+        }
+    }
+}
+
+export const saveAnswerSaga = function * (id, answer) {
+    while (true) {
+        const action = yield take(SAVE_ANSWER_REQUEST)
+        try {
+            const result = yield call(
+                djangoSaveAnswer,
+                action.payload.id,
+                action.payload.answer
+            )
+            if (result.response === 'error') {
+                yield put({
+                    type: SAVE_ANSWER_ERROR
+                })
+            } else {
+                yield put({
+                    type: SAVE_ANSWER_SUCCESS,
+                    payload: {
+                        message: result.data
+                    }
+                })
+            }
+        } catch (error) {
+            yield put({
+                type: SAVE_ANSWER_ERROR,
+                error
+            })
+        }
+    }
+}
+
+const djangoSaveAnswer = function * (id, answer) {
+    let data = {
+        id, answer
+    }
+    try {
+        const result = yield call(
+            axios.post,
+            '/tests/save_answer/',
+            data
+        )
+        return result.data
+    } catch (err) {
+        return Promise.reject(err.message)
+    }
+}
+
+export function saveAllAnswers( answers) {
+    return {
+        type: SAVE_ALL_ANSWERS_REQUEST,
+        payload: {
+            answers
+        }
+    }
+}
+
+export const saveAllAnswersSaga = function * ( answers) {
+    while (true) {
+        const action = yield take(SAVE_ALL_ANSWERS_REQUEST)
+        try {
+            const result = yield call(
+                djangoSaveAllAnswers,
+                action.payload.answers
+            )
+            if (result.response === 'error') {
+                yield put({
+                    type: SAVE_ALL_ANSWERS_ERROR
+                })
+            } else {
+                yield put({
+                    type: SAVE_ALL_ANSWERS_SUCCESS,
+                    payload: {
+                        message: result.data
+                    }
+                })
+            }
+        } catch (error) {
+            yield put({
+                type: SAVE_ALL_ANSWERS_ERROR,
+                error
+            })
+        }
+    }
+}
+
+const djangoSaveAllAnswers = function * ( answers) {
+    let data = {
+        answers
+    }
+    try {
+        const result = yield call(
+            axios.post,
+            '/tests/save_all_answers/',
+            data
+        )
+        return result.data
+    } catch (err) {
+        return Promise.reject(err.message)
+    }
+}
 export const saga = function * () {
     yield all([
         fetchTestsSaga(),
-        fetchTestInfoSaga()
+        fetchTestInfoSaga(),
+        saveAnswerSaga(),
+        saveAllAnswersSaga()
     ])
 }

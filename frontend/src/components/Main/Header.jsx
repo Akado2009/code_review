@@ -7,6 +7,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
+import { Link } from 'react-router-dom'
 
 import { signOut } from '../../ducks/login'
 import { connect } from 'react-redux'
@@ -43,6 +44,7 @@ const Header = (props) => {
     const signUserOut = () => {
         props.signOut(utils.getCookie('csrftoken'))
     }
+
     return (
         <div className={classes.root}>
             <AppBar position="static">
@@ -52,6 +54,9 @@ const Header = (props) => {
                             FBB Algorithmics
                         </Typography>
                     </a>
+                    <Link to='/' className={classes.link}>
+                        <Button className={classes.link}>TESTS</Button>
+                    </Link>
                     <Button onClick={signUserOut} className={classes.logout}>Logout</Button>
                 </Toolbar>
             </AppBar>
