@@ -89,3 +89,89 @@ def save_all_answers(request):
         except Exception as e:
             print(str(e))
             return JsonResponse({ 'data': 'error' })
+
+@login_required
+def get_test_names(request):
+    if request.method == 'GET':
+        test_names = Test.objects.all().values('name', 'id')
+        return JsonResponse({ 'data': list(test_names)})
+
+@login_required
+def delete_test(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        test_name = data['name']
+
+        test_object = Test.objects.get(name=test_name)
+        test_object.delete()
+        return JsonResponse({'data': 'Successfully deleted.'})
+
+@login_required
+def get_questions_only(request):
+    if request.method == 'GET':
+        test_id = request.GET.get('id')[0]
+        questions = Question.objects.filter(test__id=test_id).values('name', 'description', 'id')
+        return JsonResponse({ 'data': list(questions)})
+
+@login_required
+def add_question(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        name = data.get('name')
+        text = data.get('text')
+        test_id = data.get('id')
+        if not name:
+            return JsonResponse({ 'data': {
+                'response': 'error',
+                'message': 'Enter a name'
+            }})
+        if not text:
+            return JsonResponse({ 'data': {
+                'response': 'error',
+                'message': 'Enter text for the question'
+            }})
+        test = Test.objects.get(id=int(test_id))
+        question = Question(name=name, description=text, test=test)
+        question.save()
+        return JsonResponse({ 'data': {
+            'response': 'success',
+            'message': 'Successfully added new question'
+        }})
+
+@login_required
+def delete_question(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        question_id = data.get('id')
+        question = Question.objects.get(id=int(question_id))
+        question.delete()
+        return JsonResponse({ 'data': {
+            'response': 'success',
+            'message': 'Question successfully deleted'
+        }})
+
+@login_required
+def edit_question(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        question_id = data.get('id')
+        name = data.get('name')
+        text = data.get('text')
+        if not name:
+            return JsonResponse({ 'data': {
+                'response': 'error',
+                'message': 'Enter a name'
+            }})
+        if not text:
+            return JsonResponse({ 'data': {
+                'response': 'error',
+                'message': 'Enter text for the question'
+            }})
+        question = Question.objects.get(id=int(question_id))
+        question.name = name
+        question.description = text
+        question.save()
+        return JsonResponse({ 'data': {
+            'response': 'success',
+            'message': 'Question successfully updated'
+        }})

@@ -1,9 +1,10 @@
+{% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Admin Page</title>
+    <title>FBB Algorithms</title>
     <style>
       body {
         background-color: #e2e2e2 !important;
@@ -11,8 +12,8 @@
     </style>
   </head>
   <body>
-    <div id="admin">
-            ADMIN PAGE HERE
+    <div id="editor">
     </div>
+      {% render_bundle 'edit' %}
   </body>
 </html>

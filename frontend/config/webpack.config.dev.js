@@ -39,6 +39,13 @@ module.exports = {
       require.resolve('./polyfills'),
       require.resolve('react-error-overlay'),
       paths.appSrc + "/main.js",
+    ],
+    edit:[
+      require.resolve('webpack-dev-server/client') + '?http://localhost:3000',
+      require.resolve('webpack/hot/dev-server'),
+      require.resolve('./polyfills'),
+      require.resolve('react-error-overlay'),
+      paths.appSrc + "/edit.js",
     ]
   },
   output: {
