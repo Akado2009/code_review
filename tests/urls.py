@@ -2,7 +2,8 @@ from django.conf.urls import url
 from django.conf import settings
 
 from .views import fetch_all_tests, get_questions, save_answer, save_all_answers, get_test_names, \
-                   delete_test, get_questions_only, add_question, delete_question, edit_question
+                   delete_test, get_questions_only, add_question, delete_question, edit_question, \
+                   get_students, get_answer, submit_mark, add_test
 
 app_name = 'tests'
 
@@ -18,5 +19,8 @@ urlpatterns = [
     url(r'^add_question/$', add_question, name='add_question'),
     url(r'^delete_question/$', delete_question, name='delete_question'),
     url(r'^edit_question/$', edit_question, name='edit_question'),
-
+    url(r'^get_students/$', get_students, name='get_students'),
+    url(r'^get_answer/$', get_answer, name='get_answer'),
+    url(r'^submit_mark/$', submit_mark, name='submit_mark'),
+    url(r'^add_test/$', add_test, name='add_test')
 ]

@@ -5,6 +5,8 @@ import testReducer, { moduleName as testModule } from '../ducks/test'
 import { routerReducer } from 'react-router-redux'
 import editorDeleteReducer, { moduleName as editorDeleteModule } from '../ducks/editorDelete'
 import editorEditReducer, { moduleName as editorEditModule } from '../ducks/editorEdit'
+import editorAddReducer, { moduleName as editorAddModule } from '../ducks/editorAdd'
+import editorCheckReducer, { moduleName as editorCheckModule } from '../ducks/editorCheck'
 
 
 export default combineReducers({
@@ -13,5 +15,7 @@ export default combineReducers({
     [registerModule]: registerReducer,
     [testModule]: testReducer,
     [editorDeleteModule]: editorDeleteReducer,
-    [editorEditModule]: editorEditReducer
+    [editorEditModule]: editorEditReducer,
+    [editorAddModule]: editorAddReducer,
+    [editorCheckModule]: editorCheckReducer
 })

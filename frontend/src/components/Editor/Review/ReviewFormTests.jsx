@@ -1,6 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 
 import { withStyles } from '@material-ui/core/styles'
 import { CircularProgress } from '@material-ui/core'
@@ -8,30 +8,26 @@ import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import Avatar from '@material-ui/core/Avatar'
-import IconButton from '@material-ui/core/IconButton'
-import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
-import Snackbar from '@material-ui/core/Snackbar'
 import AssignmentIcon from '@material-ui/icons/Assignment'
-import DeleteIcon from '@material-ui/icons/Delete'
-import CloseIcon from '@material-ui/icons/Close'
 
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
+import IconButton from '@material-ui/core/IconButton'
 
-import { moduleName, fetchAllTestnames, deleteTest, openModal, closeSnackbar } from '../../../ducks/editorDelete'
+import RateReviewIcon from '@material-ui/icons/RateReview'
+
+import { moduleName, fetchAllTestnames, } from '../../../ducks/editorDelete'
+
 import { connect } from 'react-redux'
 
-import DeleteModal from './DeleteModal'
 
 const mapStateToProps = state => {
     return {
       loading: state[moduleName].loading,
       testNames: state[moduleName].testNames,
-      openModal: state[moduleName].openModal,
-      snackMessage: state[moduleName].snackMessage,
-      snackOpen: state[moduleName].snackOpen
+      testIds: state[moduleName].testIds
     }
 }
 
@@ -58,14 +54,10 @@ const styles = theme => ({
     },
 })
 
-class DeleteForm extends React.Component {
+class ReviewFormTests extends React.Component {
 
     componentWillMount () {
         this.props.fetchAllTestnames()
-    }
-
-    openDialog = name => event => {
-        this.props.openModal(name)
     }
 
     render () {
@@ -87,15 +79,17 @@ class DeleteForm extends React.Component {
                                         primary={test}
                                     />
                                     <ListItemSecondaryAction>
-                                        <IconButton aria-label="Delete">
-                                            <DeleteIcon onClick={this.openDialog(test)} />
+                                        <IconButton aria-label="Review">
+                                            <Link to={`/editor/review/${this.props.match.params.userId}/${this.props.testIds[i]}`}>
+                                                <RateReviewIcon />
+                                            </Link>
                                         </IconButton>
                                     </ListItemSecondaryAction>
                                 </ListItem>
                             )
                         })}
                         </List>
-                        <Link to='/editor/' className={classes.link}>
+                        <Link to={`/editor/review/`} className={classes.link}>
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -104,43 +98,22 @@ class DeleteForm extends React.Component {
                                 Back
                             </Button>
                         </Link>
-                        <DeleteModal />
                     </Paper>
                     :
                     <center>
                         <CircularProgress color="primary" size={50} />
                     </center>
                 }
-                <Snackbar
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    open={this.props.snackOpen}
-                    autoHideDuration={6000}
-                    onClose={this.props.closeSnackbar}
-                    message={<span id="message-id">{this.props.snackMessage}</span>}
-                    action={[
-                        <IconButton
-                            key="close"
-                            aria-label="Close"
-                            color="inherit"
-                            className={classes.close}
-                            onClick={this.props.closeSnackbar}
-                        >
-                        <CloseIcon />
-                        </IconButton>,
-                    ]}
-        />
+
             </div>
         )
     }
 }
 
-DeleteForm.propTypes = {
+ReviewFormTests.propTypes = {
     classes: PropTypes.object.isRequired
 }
 
 export default withStyles(styles)(
-    connect(mapStateToProps, { fetchAllTestnames, deleteTest, openModal, closeSnackbar })(DeleteForm)
+    connect(mapStateToProps, { fetchAllTestnames })(ReviewFormTests)
 )

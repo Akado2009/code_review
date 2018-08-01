@@ -1,5 +1,6 @@
 from django.utils import timezone
-from time import strftime
+from time import strftime, strptime
+from dateutil import parser
 import json
 
 
@@ -23,9 +24,11 @@ def fetch_all_tests(request):
                 'id': test.id,
                 'author': test.author.username,
                 'created_at': test.created_at.strftime("%a, %d %b %Y %H:%M:%S"),
-                'available': test.available_until < now,
+                'available': test.available_until.strftime("%d %b %Y %H:%M:%S") < now.strftime("%d %b %Y %H:%M:%S"),
                 'description': test.description
             })
+            # print(test.available_until.strftime("%a, %d %b %Y %H:%M:%S"))
+            #!TODO CHECK COMPARISON
         return JsonResponse({ 'data': data })
 
 @login_required
@@ -174,4 +177,79 @@ def edit_question(request):
         return JsonResponse({ 'data': {
             'response': 'success',
             'message': 'Question successfully updated'
+        }})
+
+@login_required
+def get_students(request):
+    if request.method == 'GET':
+        user_names = User.objects.all().values('username', 'id')
+        return JsonResponse({ 'data': list(user_names)})
+
+@login_required
+def get_answer(request):
+    if request.method == 'GET':
+        question_id = request.GET.get('questionId')[0]
+        question = Question.objects.get(id=question_id)
+        user_id = request.GET.get('userId')[0]
+        user = User.objects.get(id=user_id)
+        try:
+            answer = Answer.objects.get(user=user, question=question)
+        except:
+            answer = Answer(user=user, content='', question=question)
+            answer.save()
+
+        return JsonResponse({ 'data': {
+            'content': answer.content,
+            'mark': answer.mark,
+            'id': answer.id
+        }})
+
+@login_required
+def submit_mark(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        answer_id = data.get('id')
+        mark = data.get('mark')
+
+        answer = Answer.objects.get(id=answer_id)
+        reviewer = User.objects.get(id=request.user.id)
+        answer.mark = int(mark)
+        answer.checked_by = reviewer.username
+        answer.save()
+
+        return JsonResponse({ 'data': {
+            'response': 'success',
+            'message': 'Mark successfully updated'
+        }})
+
+@login_required
+def add_test(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        name = data.get('name')
+        description = data.get('description')
+        until = data.get('until')
+        try:
+            date = parser.parse(until)
+        except:
+            return JsonResponse({ 'data': {
+                'response': 'error',
+                'message': 'Enter correct date'
+            }})
+        if not name:
+            return JsonResponse({ 'data': {
+                'response': 'error',
+                'message': 'Enter a name'
+            }})
+        if not description:
+            return JsonResponse({ 'data': {
+                'response': 'error',
+                'message': 'Enter a description'
+            }})
+        author = User.objects.get(id=request.user.id)
+        test = Test(name=name, description=description, author=author, available_until=until)
+        test.save()
+        return JsonResponse({ 'data': {
+            'response': 'success',
+            'message': 'Mark successfully updated'
         }})
